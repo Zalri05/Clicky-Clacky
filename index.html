@@ -135,8 +135,15 @@ h1 {
     color: white;
     cursor: pointer;
     user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
     -webkit-tap-highlight-color: transparent;
-    touch-action: manipulation;
+
+    /* MULTI-TOUCH SUPPORT */
+    touch-action: none;
+    -webkit-appearance: none;
+    appearance: none;
+
     box-shadow:
         0 7px 0 rgba(160,90,115,.3),
         0 10px 12px rgba(150,80,110,.15),
@@ -364,7 +371,7 @@ h1 {
 
                 <div class="button-wrapper">
                     <button class="clicker button-a"
-                        onclick="clickButton('A', this)">
+                        onpointerdown="clickButton('A', this)">
                         A
                     </button>
                     <div class="button-count" id="count-A">0 clicks</div>
@@ -372,7 +379,7 @@ h1 {
 
                 <div class="button-wrapper">
                     <button class="clicker button-r"
-                        onclick="clickButton('R', this)">
+                        onpointerdown="clickButton('R', this)">
                         R
                     </button>
                     <div class="button-count" id="count-R">0 clicks</div>
@@ -380,7 +387,7 @@ h1 {
 
                 <div class="button-wrapper">
                     <button class="clicker button-y"
-                        onclick="clickButton('Y', this)">
+                        onpointerdown="clickButton('Y', this)">
                         Y
                     </button>
                     <div class="button-count" id="count-Y">0 clicks</div>
@@ -388,7 +395,7 @@ h1 {
 
                 <div class="button-wrapper">
                     <button class="clicker button-sun"
-                        onclick="clickButton('SUN', this)">
+                        onpointerdown="clickButton('SUN', this)">
                         🌻
                     </button>
                     <div class="button-count" id="count-SUN">0 clicks</div>
