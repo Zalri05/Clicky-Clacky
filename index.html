@@ -182,15 +182,8 @@ h1 {
     outline-offset: 4px;
 }
 
-.button-name {
-    margin-top: 15px;
-    font-size: 13px;
-    font-weight: bold;
-    color: #a96e84;
-}
-
 .button-count {
-    margin-top: 4px;
+    margin-top: 15px;
     font-family: Arial, sans-serif;
     font-size: 12px;
     color: #bd8c9e;
@@ -343,10 +336,6 @@ h1 {
     .buttons {
         gap: 6px;
     }
-
-    .button-name {
-        font-size: 11px;
-    }
 }
 </style>
 </head>
@@ -378,7 +367,6 @@ h1 {
                         onclick="clickButton('A', this)">
                         A
                     </button>
-                    <div class="button-name">A</div>
                     <div class="button-count" id="count-A">0 clicks</div>
                 </div>
 
@@ -387,7 +375,6 @@ h1 {
                         onclick="clickButton('R', this)">
                         R
                     </button>
-                    <div class="button-name">R</div>
                     <div class="button-count" id="count-R">0 clicks</div>
                 </div>
 
@@ -396,7 +383,6 @@ h1 {
                         onclick="clickButton('Y', this)">
                         Y
                     </button>
-                    <div class="button-name">Y</div>
                     <div class="button-count" id="count-Y">0 clicks</div>
                 </div>
 
@@ -405,7 +391,6 @@ h1 {
                         onclick="clickButton('SUN', this)">
                         🌻
                     </button>
-                    <div class="button-name">SUNFLOWER</div>
                     <div class="button-count" id="count-SUN">0 clicks</div>
                 </div>
 
@@ -416,8 +401,11 @@ h1 {
     </div>
 
     <div class="total-section">
+
         <div class="total-label">TOTAL CLICKS</div>
+
         <div class="total-count" id="total-count">0</div>
+
     </div>
 
     <div class="message" id="message">
@@ -519,11 +507,11 @@ function getAudioContext() {
 }
 
 
-// CREATE A SHORT NOISE IMPACT
+// CREATE NOISE IMPACT
 
-function makeNoiseImpact(ctx, time, settings) {
+function makeImpact(ctx, time, settings) {
 
-    const duration = settings.duration || 0.04;
+    const duration = settings.duration || 0.05;
     const size = Math.floor(ctx.sampleRate * duration);
 
     const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
@@ -533,7 +521,7 @@ function makeNoiseImpact(ctx, time, settings) {
 
         const fade = Math.pow(
             1 - i / size,
-            settings.fade || 4
+            settings.fade || 3
         );
 
         data[i] = (Math.random() * 2 - 1) * fade;
@@ -543,28 +531,62 @@ function makeNoiseImpact(ctx, time, settings) {
     noise.buffer = buffer;
 
     const filter = ctx.createBiquadFilter();
-    filter.type = "highpass";
-    filter.frequency.value = settings.filter || 1800;
+    filter.type = settings.filterType || "highpass";
+    filter.frequency.value = settings.filter || 1600;
 
-    const gain = ctx.createGain();
+    const noiseGain = ctx.createGain();
 
-    gain.gain.setValueAtTime(settings.volume, time);
+    noiseGain.gain.setValueAtTime(settings.volume, time);
 
-    gain.gain.exponentialRampToValueAtTime(
+    noiseGain.gain.exponentialRampToValueAtTime(
         0.001,
         time + duration
     );
 
     noise.connect(filter);
-    filter.connect(gain);
-    gain.connect(ctx.destination);
+    filter.connect(noiseGain);
+    noiseGain.connect(ctx.destination);
 
     noise.start(time);
     noise.stop(time + duration);
+
+    if (settings.frequency) {
+
+        const oscillator = ctx.createOscillator();
+        const oscGain = ctx.createGain();
+
+        oscillator.type = settings.wave || "triangle";
+
+        oscillator.frequency.setValueAtTime(
+            settings.frequency,
+            time
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            settings.frequency * (settings.pitchEnd || 0.5),
+            time + duration
+        );
+
+        oscGain.gain.setValueAtTime(
+            settings.volume * (settings.toneVolume || 0.6),
+            time
+        );
+
+        oscGain.gain.exponentialRampToValueAtTime(
+            0.001,
+            time + duration
+        );
+
+        oscillator.connect(oscGain);
+        oscGain.connect(ctx.destination);
+
+        oscillator.start(time);
+        oscillator.stop(time + duration);
+    }
 }
 
 
-// CREATE A SOFT KEYBOARD TONE
+// SOFT KEYBOARD TONE
 
 function makeSoftTone(ctx, time, settings) {
 
@@ -603,11 +625,11 @@ function makeSoftTone(ctx, time, settings) {
 }
 
 
-// CLICKY SOUND - ORIGINAL SOUND
+// CLICKY SOUND - ORIGINAL ARY SOUND
 
 function playClicky(ctx, now) {
 
-    function makeImpact(time, volume, frequency) {
+    function makeOriginalImpact(time, volume, frequency) {
 
         const duration = 0.035;
 
@@ -671,67 +693,64 @@ function playClicky(ctx, now) {
         oscillator.stop(time + 0.05);
     }
 
-    makeImpact(now, 0.45, 1200);
-    makeImpact(now + 0.045, 0.23, 1800);
+    makeOriginalImpact(now, 0.45, 1200);
+    makeOriginalImpact(now + 0.045, 0.23, 1800);
 }
 
 
-// TACTILE SOUND - SOFT KEYBOARD PRESS
+// TACTILE SOUND - FROM EISE CODE
 
 function playTactile(ctx, now) {
 
-    makeNoiseImpact(ctx, now, {
-        volume: 0.12,
-        filter: 2600,
+    // Soft, rounded mechanical tap
+    makeImpact(ctx, now, {
+        volume: 0.20,
+        frequency: 650,
+        filter: 2400,
+        filterType: "highpass",
+        duration: 0.035,
+        toneVolume: 0.45,
+        pitchEnd: 0.8,
+        fade: 4
+    });
+
+    // Delicate high-pitched tick
+    makeImpact(ctx, now + 0.035, {
+        volume: 0.09,
+        frequency: 1450,
+        filter: 3200,
         duration: 0.025,
+        toneVolume: 0.35,
+        pitchEnd: 0.9,
         fade: 5
-    });
-
-    makeSoftTone(ctx, now, {
-        frequency: 520,
-        endFrequency: 430,
-        volume: 0.035,
-        duration: 0.075,
-        attack: 0.008,
-        wave: "sine"
-    });
-
-    makeNoiseImpact(ctx, now + 0.035, {
-        volume: 0.045,
-        filter: 3400,
-        duration: 0.018,
-        fade: 6
     });
 }
 
 
-// LINEAR SOUND - DREAMY AND SMOOTH
+// LINEAR SOUND - PREVIOUS ARY TACTILE SOUND
 
 function playLinear(ctx, now) {
 
-    makeNoiseImpact(ctx, now, {
+    // Gentle, rounded keyboard press
+    makeImpact(ctx, now, {
+        volume: 0.12,
+        frequency: 900,
+        filter: 2800,
+        duration: 0.045,
+        toneVolume: 0.3,
+        pitchEnd: 0.85,
+        fade: 4
+    });
+
+    // Soft release tick
+    makeImpact(ctx, now + 0.035, {
         volume: 0.045,
-        filter: 3200,
+        frequency: 1450,
+        filter: 3400,
         duration: 0.025,
-        fade: 6
-    });
-
-    makeSoftTone(ctx, now + 0.015, {
-        frequency: 1480,
-        endFrequency: 1180,
-        volume: 0.035,
-        duration: 0.20,
-        attack: 0.045,
-        wave: "sine"
-    });
-
-    makeSoftTone(ctx, now + 0.055, {
-        frequency: 1860,
-        endFrequency: 1640,
-        volume: 0.012,
-        duration: 0.16,
-        attack: 0.04,
-        wave: "sine"
+        toneVolume: 0.25,
+        pitchEnd: 0.9,
+        fade: 5
     });
 }
 
@@ -749,11 +768,17 @@ function playMechanicalClick() {
     const now = ctx.currentTime;
 
     if (currentSound === "clicky") {
+
         playClicky(ctx, now);
+
     } else if (currentSound === "tactile") {
+
         playTactile(ctx, now);
+
     } else if (currentSound === "linear") {
+
         playLinear(ctx, now);
+
     }
 }
 
@@ -764,9 +789,9 @@ const soundDescriptions = {
 
     clicky: "Crisp and satisfying mechanical clicks.",
 
-    tactile: "A soft keyboard-like press with a gentle bump. ♡",
+    tactile: "A soft, rounded tap with a delicate little tick. ♡",
 
-    linear: "A smooth, quiet press with a dreamy little chime. ✨"
+    linear: "A gentle, muted keyboard press. ☁️"
 };
 
 function changeSound(type) {
