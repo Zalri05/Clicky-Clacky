@@ -18,10 +18,10 @@ body {
     align-items: center;
     justify-content: center;
     font-family: Georgia, serif;
-    color: #665548;
+    color: #805565;
     background:
-        radial-gradient(circle at top, #fff7ed, transparent 60%),
-        linear-gradient(145deg, #f8e9df, #eadfd1, #e8d9cf);
+        radial-gradient(circle at top, #fff8fa, transparent 60%),
+        linear-gradient(145deg, #ffe8ef, #f8dce7, #efd2e0);
 }
 
 .container {
@@ -33,12 +33,13 @@ body {
 h1 {
     font-size: 30px;
     margin-bottom: 8px;
-    color: #806956;
+    color: #bd7892;
+    text-shadow: 0 2px 4px rgba(255,255,255,.9);
 }
 
 .subtitle {
     font-size: 14px;
-    color: #a18b78;
+    color: #b78b9d;
     margin-bottom: 35px;
 }
 
@@ -59,11 +60,12 @@ h1 {
     transform: translateX(-50%);
     width: 48px;
     height: 48px;
-    border: 6px solid #b6aaa0;
+    border: 6px solid #c9a7b3;
     border-radius: 50%;
+    background: transparent;
     box-shadow:
-        inset 0 2px 4px rgba(255,255,255,.8),
-        0 3px 5px rgba(0,0,0,.15);
+        inset 0 2px 4px rgba(255,255,255,.9),
+        0 3px 5px rgba(150,90,110,.2);
 }
 
 .keyring::after {
@@ -71,7 +73,7 @@ h1 {
     position: absolute;
     width: 20px;
     height: 16px;
-    border: 5px solid #b6aaa0;
+    border: 5px solid #c9a7b3;
     border-bottom: none;
     border-radius: 15px 15px 0 0;
     top: 36px;
@@ -86,18 +88,18 @@ h1 {
     width: 100%;
     padding: 25px 12px 22px;
     border-radius: 30px;
-    background: linear-gradient(145deg, #fffaf0, #e9dccc);
-    border: 2px solid #d4c5b5;
+    background: linear-gradient(145deg, #fff5f8, #f3d5e1);
+    border: 2px solid #e7bdcd;
     box-shadow:
-        0 12px 0 #c6b5a4,
-        0 18px 25px rgba(91,68,48,.2),
-        inset 0 3px 5px white;
+        0 12px 0 #d9aebe,
+        0 18px 25px rgba(145,85,110,.2),
+        inset 0 3px 6px white;
 }
 
 .keychain-label {
     font-size: 13px;
     letter-spacing: 3px;
-    color: #a18b78;
+    color: #bf8299;
     margin-bottom: 22px;
 }
 
@@ -116,72 +118,91 @@ h1 {
     min-width: 0;
 }
 
+/* MECHANICAL BUTTON DESIGN */
+
 .clicker {
     width: 100%;
     aspect-ratio: 1;
     max-width: 76px;
-    border: 3px solid rgba(255,255,255,.8);
+
+    border: 3px solid rgba(255,255,255,.9);
     border-radius: 50%;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     font-family: Georgia, serif;
     font-size: clamp(23px, 7vw, 32px);
     font-weight: bold;
-    color: #fffdf8;
+
+    color: white;
     cursor: pointer;
     user-select: none;
+
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
+
     box-shadow:
-        0 7px 0 rgba(90,65,55,.25),
-        0 10px 12px rgba(0,0,0,.12),
-        inset 0 3px 5px rgba(255,255,255,.6);
-    transition: transform .08s, box-shadow .08s;
+        0 7px 0 rgba(160,90,115,.3),
+        0 10px 12px rgba(150,80,110,.15),
+        inset 0 4px 7px rgba(255,255,255,.7);
+
+    transition:
+        transform .07s ease,
+        box-shadow .07s ease,
+        filter .07s ease;
 }
 
-.clicker:active,
-.clicker.pressed {
-    transform: translateY(6px);
-    box-shadow:
-        0 1px 0 rgba(90,65,55,.25),
-        inset 0 3px 7px rgba(0,0,0,.12);
-}
-
-.clicker:focus-visible {
-    outline: 3px solid #8e765f;
-    outline-offset: 4px;
-}
+/* INDIVIDUAL BUTTON COLORS */
 
 .button-a {
-    background: linear-gradient(145deg, #eeb8c1, #d995a4);
+    background: linear-gradient(145deg, #f7b9cd, #e98eae);
 }
 
 .button-r {
-    background: linear-gradient(145deg, #cbb7df, #a88fca);
+    background: linear-gradient(145deg, #e9b4d2, #d58dbb);
 }
 
 .button-y {
-    background: linear-gradient(145deg, #e9d39e, #d2b36e);
+    background: linear-gradient(145deg, #f4c6d5, #e9a4bb);
 }
 
 .button-sun {
-    background: linear-gradient(145deg, #f4c76f, #e4a93f);
+    background: linear-gradient(145deg, #f7ce83, #e9ad50);
     font-size: clamp(25px, 7vw, 33px);
+}
+
+/* PRESS DOWN EFFECT */
+
+.clicker:active,
+.clicker.pressed {
+    transform: translateY(6px) scale(.97);
+
+    box-shadow:
+        0 1px 0 rgba(160,90,115,.3),
+        inset 0 4px 8px rgba(120,50,80,.15);
+
+    filter: brightness(.96);
+}
+
+.clicker:focus-visible {
+    outline: 3px solid #c27e9a;
+    outline-offset: 4px;
 }
 
 .button-name {
     margin-top: 15px;
     font-size: 13px;
     font-weight: bold;
-    color: #806956;
+    color: #a96e84;
 }
 
 .button-count {
     margin-top: 4px;
     font-family: Arial, sans-serif;
     font-size: 12px;
-    color: #a18b78;
+    color: #bd8c9e;
 }
 
 /* TOTAL COUNTER */
@@ -193,14 +214,14 @@ h1 {
 .total-label {
     font-size: 13px;
     letter-spacing: 2px;
-    color: #a18b78;
+    color: #bd8c9e;
 }
 
 .total-count {
     font-family: Arial, sans-serif;
     font-size: 40px;
     font-weight: bold;
-    color: #9d7c70;
+    color: #c17e98;
     margin-top: 5px;
     text-shadow: 0 2px 3px white;
 }
@@ -208,7 +229,7 @@ h1 {
 .message {
     min-height: 25px;
     font-size: 14px;
-    color: #a18b78;
+    color: #b78b9d;
     font-style: italic;
     margin: 18px 0;
 }
@@ -224,14 +245,14 @@ h1 {
 
 .control-button {
     padding: 12px 20px;
-    border: 1px solid #d8c5b3;
+    border: 1px solid #e6bdcc;
     border-radius: 25px;
-    background: #fff8ee;
-    color: #806956;
+    background: #fff5f8;
+    color: #a96e84;
     font-size: 13px;
     font-weight: bold;
     cursor: pointer;
-    box-shadow: 0 3px 0 #d2c0ae;
+    box-shadow: 0 3px 0 #dfb5c4;
     touch-action: manipulation;
 }
 
@@ -243,10 +264,10 @@ h1 {
 .footer {
     margin-top: 30px;
     font-size: 12px;
-    color: #ad9986;
+    color: #c19aaa;
 }
 
-/* LITTLE CLICK EFFECT */
+/* FLOATING EFFECT */
 
 .sparkle {
     position: fixed;
@@ -301,7 +322,7 @@ h1 {
         <div class="keychain">
 
             <div class="keychain-label">
-                MADE WITH LOVE
+                MADE WITH LOVE ♡
             </div>
 
             <div class="buttons">
@@ -362,12 +383,14 @@ h1 {
 
     <div class="controls">
 
-        <button class="control-button" onclick="toggleSound()"
+        <button class="control-button"
+            onclick="toggleSound()"
             id="sound-button">
             🔊 Sound On
         </button>
 
-        <button class="control-button" onclick="resetCounter()">
+        <button class="control-button"
+            onclick="resetCounter()">
             ↻ Reset Counter
         </button>
 
@@ -392,7 +415,129 @@ let counts = {
 
 let totalClicks = 0;
 let soundEnabled = true;
+
 let audioContext = null;
+
+
+// CREATE AUDIO CONTEXT
+
+function getAudioContext() {
+
+    if (!audioContext) {
+
+        const AudioContextClass =
+            window.AudioContext || window.webkitAudioContext;
+
+        if (!AudioContextClass) return null;
+
+        audioContext = new AudioContextClass();
+    }
+
+    if (audioContext.state === "suspended") {
+        audioContext.resume();
+    }
+
+    return audioContext;
+}
+
+
+// MECHANICAL CLICK SOUND
+
+function playMechanicalClick() {
+
+    if (!soundEnabled) return;
+
+    const ctx = getAudioContext();
+
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+
+    // Two quick mechanical impacts:
+    // a sharp initial click followed by a softer clack.
+
+    function makeImpact(time, volume, frequency) {
+
+        // Short burst of mechanical noise
+
+        const duration = 0.035;
+
+        const buffer = ctx.createBuffer(
+            1,
+            Math.floor(ctx.sampleRate * duration),
+            ctx.sampleRate
+        );
+
+        const data = buffer.getChannelData(0);
+
+        for (let i = 0; i < data.length; i++) {
+            data[i] = Math.random() * 2 - 1;
+        }
+
+        const noise = ctx.createBufferSource();
+        noise.buffer = buffer;
+
+        const filter = ctx.createBiquadFilter();
+        filter.type = "highpass";
+        filter.frequency.value = frequency;
+
+        const noiseGain = ctx.createGain();
+
+        noiseGain.gain.setValueAtTime(volume, time);
+        noiseGain.gain.exponentialRampToValueAtTime(
+            0.001,
+            time + duration
+        );
+
+        noise.connect(filter);
+        filter.connect(noiseGain);
+        noiseGain.connect(ctx.destination);
+
+        noise.start(time);
+        noise.stop(time + duration);
+
+        // Small resonant body for a physical button feel
+
+        const oscillator = ctx.createOscillator();
+        const bodyGain = ctx.createGain();
+
+        oscillator.type = "triangle";
+
+        oscillator.frequency.setValueAtTime(
+            190,
+            time
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            90,
+            time + 0.04
+        );
+
+        bodyGain.gain.setValueAtTime(
+            volume * 0.5,
+            time
+        );
+
+        bodyGain.gain.exponentialRampToValueAtTime(
+            0.001,
+            time + 0.045
+        );
+
+        oscillator.connect(bodyGain);
+        bodyGain.connect(ctx.destination);
+
+        oscillator.start(time);
+        oscillator.stop(time + 0.05);
+
+    }
+
+    // Main press
+    makeImpact(now, 0.45, 1200);
+
+    // Return spring / release click
+    makeImpact(now + 0.045, 0.23, 1800);
+
+}
 
 
 // MESSAGES
@@ -412,6 +557,7 @@ const messages = [
 function clickButton(type, button) {
 
     // Update counters
+
     counts[type]++;
     totalClicks++;
 
@@ -421,85 +567,34 @@ function clickButton(type, button) {
     document.getElementById("total-count").textContent =
         totalClicks;
 
-    // Play sound
-    if (soundEnabled) {
-        playClickSound();
-    }
+    // Play mechanical sound
 
-    // Button press animation
+    playMechanicalClick();
+
+    // Physical press animation
+
     button.classList.add("pressed");
 
     setTimeout(() => {
         button.classList.remove("pressed");
-    }, 100);
+    }, 110);
 
-    // Sparkle effect
+    // Floating sparkle
+
     createSparkle(button);
 
-    // Special sunflower effect
+    // Special sunflower response
+
     if (type === "SUN") {
+
         document.getElementById("message").textContent =
             "A little sunshine just for you. 🌻";
+
     } else if (totalClicks % 10 === 0) {
+
         document.getElementById("message").textContent =
             messages[Math.floor(Math.random() * messages.length)];
-    }
 
-}
-
-
-// CLICK SOUND
-
-function playClickSound() {
-
-    try {
-
-        if (!audioContext) {
-            const AudioContextClass =
-                window.AudioContext || window.webkitAudioContext;
-
-            if (!AudioContextClass) return;
-
-            audioContext = new AudioContextClass();
-        }
-
-        if (audioContext.state === "suspended") {
-            audioContext.resume();
-        }
-
-        const oscillator = audioContext.createOscillator();
-        const gain = audioContext.createGain();
-
-        oscillator.type = "triangle";
-
-        oscillator.frequency.setValueAtTime(
-            750,
-            audioContext.currentTime
-        );
-
-        oscillator.frequency.exponentialRampToValueAtTime(
-            180,
-            audioContext.currentTime + 0.035
-        );
-
-        gain.gain.setValueAtTime(
-            0.16,
-            audioContext.currentTime
-        );
-
-        gain.gain.exponentialRampToValueAtTime(
-            0.001,
-            audioContext.currentTime + 0.045
-        );
-
-        oscillator.connect(gain);
-        gain.connect(audioContext.destination);
-
-        oscillator.start();
-        oscillator.stop(audioContext.currentTime + 0.05);
-
-    } catch (error) {
-        console.log("Audio unavailable.");
     }
 
 }
