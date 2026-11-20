@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARY Clicker ♡</title>
+
+<style>
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 25px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, serif;
+    color: #665548;
+    background:
+        radial-gradient(circle at top, #fff7ed, transparent 60%),
+        linear-gradient(145deg, #f8e9df, #eadfd1, #e8d9cf);
+}
+
+.container {
+    width: 100%;
+    max-width: 430px;
+    text-align: center;
+}
+
+h1 {
+    font-size: 30px;
+    margin-bottom: 8px;
+    color: #806956;
+}
+
+.subtitle {
+    font-size: 14px;
+    color: #a18b78;
+    margin-bottom: 35px;
+}
+
+/* KEYCHAIN */
+
+.keychain-area {
+    position: relative;
+    padding-top: 48px;
+    margin: 0 auto 30px;
+}
+
+/* METAL KEYRING */
+
+.keyring {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 48px;
+    height: 48px;
+    border: 6px solid #b6aaa0;
+    border-radius: 50%;
+    box-shadow:
+        inset 0 2px 4px rgba(255,255,255,.8),
+        0 3px 5px rgba(0,0,0,.15);
+}
+
+.keyring::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 16px;
+    border: 5px solid #b6aaa0;
+    border-bottom: none;
+    border-radius: 15px 15px 0 0;
+    top: 36px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+/* KEYCHAIN BODY */
+
+.keychain {
+    position: relative;
+    width: 100%;
+    padding: 25px 12px 22px;
+    border-radius: 30px;
+    background: linear-gradient(145deg, #fffaf0, #e9dccc);
+    border: 2px solid #d4c5b5;
+    box-shadow:
+        0 12px 0 #c6b5a4,
+        0 18px 25px rgba(91,68,48,.2),
+        inset 0 3px 5px white;
+}
+
+.keychain-label {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #a18b78;
+    margin-bottom: 22px;
+}
+
+/* BUTTONS */
+
+.buttons {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+}
+
+.button-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-width: 0;
+}
+
+.clicker {
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 76px;
+    border: 3px solid rgba(255,255,255,.8);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: Georgia, serif;
+    font-size: clamp(23px, 7vw, 32px);
+    font-weight: bold;
+    color: #fffdf8;
+    cursor: pointer;
+    user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
+    box-shadow:
+        0 7px 0 rgba(90,65,55,.25),
+        0 10px 12px rgba(0,0,0,.12),
+        inset 0 3px 5px rgba(255,255,255,.6);
+    transition: transform .08s, box-shadow .08s;
+}
+
+.clicker:active,
+.clicker.pressed {
+    transform: translateY(6px);
+    box-shadow:
+        0 1px 0 rgba(90,65,55,.25),
+        inset 0 3px 7px rgba(0,0,0,.12);
+}
+
+.clicker:focus-visible {
+    outline: 3px solid #8e765f;
+    outline-offset: 4px;
+}
+
+.button-a {
+    background: linear-gradient(145deg, #eeb8c1, #d995a4);
+}
+
+.button-r {
+    background: linear-gradient(145deg, #cbb7df, #a88fca);
+}
+
+.button-y {
+    background: linear-gradient(145deg, #e9d39e, #d2b36e);
+}
+
+.button-sun {
+    background: linear-gradient(145deg, #f4c76f, #e4a93f);
+    font-size: clamp(25px, 7vw, 33px);
+}
+
+.button-name {
+    margin-top: 15px;
+    font-size: 13px;
+    font-weight: bold;
+    color: #806956;
+}
+
+.button-count {
+    margin-top: 4px;
+    font-family: Arial, sans-serif;
+    font-size: 12px;
+    color: #a18b78;
+}
+
+/* TOTAL COUNTER */
+
+.total-section {
+    margin: 35px auto 20px;
+}
+
+.total-label {
+    font-size: 13px;
+    letter-spacing: 2px;
+    color: #a18b78;
+}
+
+.total-count {
+    font-family: Arial, sans-serif;
+    font-size: 40px;
+    font-weight: bold;
+    color: #9d7c70;
+    margin-top: 5px;
+    text-shadow: 0 2px 3px white;
+}
+
+.message {
+    min-height: 25px;
+    font-size: 14px;
+    color: #a18b78;
+    font-style: italic;
+    margin: 18px 0;
+}
+
+/* CONTROLS */
+
+.controls {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.control-button {
+    padding: 12px 20px;
+    border: 1px solid #d8c5b3;
+    border-radius: 25px;
+    background: #fff8ee;
+    color: #806956;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+    box-shadow: 0 3px 0 #d2c0ae;
+    touch-action: manipulation;
+}
+
+.control-button:active {
+    transform: translateY(3px);
+    box-shadow: none;
+}
+
+.footer {
+    margin-top: 30px;
+    font-size: 12px;
+    color: #ad9986;
+}
+
+/* LITTLE CLICK EFFECT */
+
+.sparkle {
+    position: fixed;
+    pointer-events: none;
+    z-index: 100;
+    font-size: 19px;
+    animation: floatUp .8s ease-out forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        opacity: 1;
+        transform: translateY(0) scale(.7);
+    }
+
+    100% {
+        opacity: 0;
+        transform: translateY(-65px) scale(1.4);
+    }
+}
+
+@media(max-width:360px) {
+    .keychain {
+        padding: 22px 8px 18px;
+    }
+
+    .buttons {
+        gap: 6px;
+    }
+
+    .button-name {
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>ARY Clicker ♡</h1>
+
+    <p class="subtitle">
+        A little click, a little comfort.
+    </p>
+
+    <div class="keychain-area">
+
+        <div class="keyring"></div>
+
+        <div class="keychain">
+
+            <div class="keychain-label">
+                MADE WITH LOVE
+            </div>
+
+            <div class="buttons">
+
+                <div class="button-wrapper">
+                    <button class="clicker button-a"
+                        onclick="clickButton('A', this)">
+                        A
+                    </button>
+                    <div class="button-name">A</div>
+                    <div class="button-count" id="count-A">0 clicks</div>
+                </div>
+
+                <div class="button-wrapper">
+                    <button class="clicker button-r"
+                        onclick="clickButton('R', this)">
+                        R
+                    </button>
+                    <div class="button-name">R</div>
+                    <div class="button-count" id="count-R">0 clicks</div>
+                </div>
+
+                <div class="button-wrapper">
+                    <button class="clicker button-y"
+                        onclick="clickButton('Y', this)">
+                        Y
+                    </button>
+                    <div class="button-name">Y</div>
+                    <div class="button-count" id="count-Y">0 clicks</div>
+                </div>
+
+                <div class="button-wrapper">
+                    <button class="clicker button-sun"
+                        onclick="clickButton('SUN', this)">
+                        🌻
+                    </button>
+                    <div class="button-name">SUNFLOWER</div>
+                    <div class="button-count" id="count-SUN">0 clicks</div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="total-section">
+
+        <div class="total-label">TOTAL CLICKS</div>
+
+        <div class="total-count" id="total-count">0</div>
+
+    </div>
+
+    <div class="message" id="message">
+        Go ahead, give the buttons a little press. ♡
+    </div>
+
+    <div class="controls">
+
+        <button class="control-button" onclick="toggleSound()"
+            id="sound-button">
+            🔊 Sound On
+        </button>
+
+        <button class="control-button" onclick="resetCounter()">
+            ↻ Reset Counter
+        </button>
+
+    </div>
+
+    <div class="footer">
+        Just click, relax, and enjoy the little things. ☁️
+    </div>
+
+</div>
+
+<script>
+
+// CLICK COUNTERS
+
+let counts = {
+    A: 0,
+    R: 0,
+    Y: 0,
+    SUN: 0
+};
+
+let totalClicks = 0;
+let soundEnabled = true;
+let audioContext = null;
+
+
+// MESSAGES
+
+const messages = [
+    "A little click for a little happiness. ♡",
+    "Take your time. There's no rush. ☁️",
+    "One more click? Just because. ✨",
+    "Hope this makes you smile. 🌷",
+    "Sending you a little sunshine. 🌻",
+    "You're doing just fine. ♡"
+];
+
+
+// CLICK FUNCTION
+
+function clickButton(type, button) {
+
+    // Update counters
+    counts[type]++;
+    totalClicks++;
+
+    document.getElementById("count-" + type).textContent =
+        counts[type] + (counts[type] === 1 ? " click" : " clicks");
+
+    document.getElementById("total-count").textContent =
+        totalClicks;
+
+    // Play sound
+    if (soundEnabled) {
+        playClickSound();
+    }
+
+    // Button press animation
+    button.classList.add("pressed");
+
+    setTimeout(() => {
+        button.classList.remove("pressed");
+    }, 100);
+
+    // Sparkle effect
+    createSparkle(button);
+
+    // Special sunflower effect
+    if (type === "SUN") {
+        document.getElementById("message").textContent =
+            "A little sunshine just for you. 🌻";
+    } else if (totalClicks % 10 === 0) {
+        document.getElementById("message").textContent =
+            messages[Math.floor(Math.random() * messages.length)];
+    }
+
+}
+
+
+// CLICK SOUND
+
+function playClickSound() {
+
+    try {
+
+        if (!audioContext) {
+            const AudioContextClass =
+                window.AudioContext || window.webkitAudioContext;
+
+            if (!AudioContextClass) return;
+
+            audioContext = new AudioContextClass();
+        }
+
+        if (audioContext.state === "suspended") {
+            audioContext.resume();
+        }
+
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+
+        oscillator.type = "triangle";
+
+        oscillator.frequency.setValueAtTime(
+            750,
+            audioContext.currentTime
+        );
+
+        oscillator.frequency.exponentialRampToValueAtTime(
+            180,
+            audioContext.currentTime + 0.035
+        );
+
+        gain.gain.setValueAtTime(
+            0.16,
+            audioContext.currentTime
+        );
+
+        gain.gain.exponentialRampToValueAtTime(
+            0.001,
+            audioContext.currentTime + 0.045
+        );
+
+        oscillator.connect(gain);
+        gain.connect(audioContext.destination);
+
+        oscillator.start();
+        oscillator.stop(audioContext.currentTime + 0.05);
+
+    } catch (error) {
+        console.log("Audio unavailable.");
+    }
+
+}
+
+
+// SPARKLE EFFECT
+
+function createSparkle(button) {
+
+    const rect = button.getBoundingClientRect();
+
+    const sparkle = document.createElement("div");
+
+    sparkle.className = "sparkle";
+
+    sparkle.textContent =
+        Math.random() > 0.5 ? "✨" : "♡";
+
+    sparkle.style.left =
+        (rect.left + rect.width / 2) + "px";
+
+    sparkle.style.top =
+        (rect.top + rect.height / 2) + "px";
+
+    document.body.appendChild(sparkle);
+
+    setTimeout(() => {
+        sparkle.remove();
+    }, 800);
+
+}
+
+
+// SOUND TOGGLE
+
+function toggleSound() {
+
+    soundEnabled = !soundEnabled;
+
+    document.getElementById("sound-button").textContent =
+        soundEnabled ? "🔊 Sound On" : "🔇 Sound Off";
+
+}
+
+
+// RESET COUNTER
+
+function resetCounter() {
+
+    counts = {
+        A: 0,
+        R: 0,
+        Y: 0,
+        SUN: 0
+    };
+
+    totalClicks = 0;
+
+    document.getElementById("total-count").textContent = "0";
+
+    for (const type in counts) {
+
+        document.getElementById("count-" + type).textContent =
+            "0 clicks";
+
+    }
+
+    document.getElementById("message").textContent =
+        "Fresh start! Enjoy your little clicker. ♡";
+
+}
+
+</script>
+
+</body>
+</html>
