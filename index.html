@@ -124,30 +124,23 @@ h1 {
     width: 100%;
     aspect-ratio: 1;
     max-width: 76px;
-
     border: 3px solid rgba(255,255,255,.9);
     border-radius: 50%;
-
     display: flex;
     align-items: center;
     justify-content: center;
-
     font-family: Georgia, serif;
     font-size: clamp(23px, 7vw, 32px);
     font-weight: bold;
-
     color: white;
     cursor: pointer;
     user-select: none;
-
     -webkit-tap-highlight-color: transparent;
     touch-action: manipulation;
-
     box-shadow:
         0 7px 0 rgba(160,90,115,.3),
         0 10px 12px rgba(150,80,110,.15),
         inset 0 4px 7px rgba(255,255,255,.7);
-
     transition:
         transform .07s ease,
         box-shadow .07s ease,
@@ -178,11 +171,9 @@ h1 {
 .clicker:active,
 .clicker.pressed {
     transform: translateY(6px) scale(.97);
-
     box-shadow:
         0 1px 0 rgba(160,90,115,.3),
         inset 0 4px 8px rgba(120,50,80,.15);
-
     filter: brightness(.96);
 }
 
@@ -232,6 +223,61 @@ h1 {
     color: #b78b9d;
     font-style: italic;
     margin: 18px 0;
+}
+
+/* SOUND CHOICE */
+
+.sound-panel {
+    margin: 25px auto 22px;
+    padding: 16px;
+    border: 1px solid #e6bdcc;
+    border-radius: 20px;
+    background: rgba(255,245,248,.75);
+}
+
+.sound-title {
+    margin-bottom: 12px;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #ad748a;
+}
+
+.sound-options {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+}
+
+.sound-option {
+    flex: 1;
+    padding: 10px 5px;
+    border: 1px solid #e6bdcc;
+    border-radius: 14px;
+    background: #fff8fa;
+    color: #a96e84;
+    font-family: Georgia, serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: .15s ease;
+}
+
+.sound-option.active {
+    background: #edc9d7;
+    border-color: #c98ca5;
+    color: #805565;
+    font-weight: bold;
+    box-shadow: inset 0 2px 4px rgba(150,80,110,.1);
+}
+
+.sound-option:active {
+    transform: scale(.96);
+}
+
+.sound-description {
+    min-height: 18px;
+    margin: 12px 0 0;
+    font-size: 11px;
+    color: #bd8c9e;
 }
 
 /* CONTROLS */
@@ -370,15 +416,46 @@ h1 {
     </div>
 
     <div class="total-section">
-
         <div class="total-label">TOTAL CLICKS</div>
-
         <div class="total-count" id="total-count">0</div>
-
     </div>
 
     <div class="message" id="message">
         Go ahead, give the buttons a little press. ♡
+    </div>
+
+    <!-- SOUND CHOICE -->
+
+    <div class="sound-panel">
+
+        <div class="sound-title">CHOOSE YOUR SOUND ♡</div>
+
+        <div class="sound-options">
+
+            <button class="sound-option active"
+                id="clicky"
+                onclick="changeSound('clicky')">
+                Clicky
+            </button>
+
+            <button class="sound-option"
+                id="tactile"
+                onclick="changeSound('tactile')">
+                Tactile
+            </button>
+
+            <button class="sound-option"
+                id="linear"
+                onclick="changeSound('linear')">
+                Linear
+            </button>
+
+        </div>
+
+        <p class="sound-description" id="sound-description">
+            Crisp and satisfying mechanical clicks.
+        </p>
+
     </div>
 
     <div class="controls">
@@ -415,6 +492,7 @@ let counts = {
 
 let totalClicks = 0;
 let soundEnabled = true;
+let currentSound = "clicky";
 
 let audioContext = null;
 
@@ -441,24 +519,95 @@ function getAudioContext() {
 }
 
 
-// MECHANICAL CLICK SOUND
+// CREATE A SHORT NOISE IMPACT
 
-function playMechanicalClick() {
+function makeNoiseImpact(ctx, time, settings) {
 
-    if (!soundEnabled) return;
+    const duration = settings.duration || 0.04;
+    const size = Math.floor(ctx.sampleRate * duration);
 
-    const ctx = getAudioContext();
+    const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
+    const data = buffer.getChannelData(0);
 
-    if (!ctx) return;
+    for (let i = 0; i < size; i++) {
 
-    const now = ctx.currentTime;
+        const fade = Math.pow(
+            1 - i / size,
+            settings.fade || 4
+        );
 
-    // Two quick mechanical impacts:
-    // a sharp initial click followed by a softer clack.
+        data[i] = (Math.random() * 2 - 1) * fade;
+    }
+
+    const noise = ctx.createBufferSource();
+    noise.buffer = buffer;
+
+    const filter = ctx.createBiquadFilter();
+    filter.type = "highpass";
+    filter.frequency.value = settings.filter || 1800;
+
+    const gain = ctx.createGain();
+
+    gain.gain.setValueAtTime(settings.volume, time);
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.001,
+        time + duration
+    );
+
+    noise.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+
+    noise.start(time);
+    noise.stop(time + duration);
+}
+
+
+// CREATE A SOFT KEYBOARD TONE
+
+function makeSoftTone(ctx, time, settings) {
+
+    const oscillator = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    oscillator.type = settings.wave || "sine";
+
+    oscillator.frequency.setValueAtTime(
+        settings.frequency,
+        time
+    );
+
+    oscillator.frequency.exponentialRampToValueAtTime(
+        settings.endFrequency || settings.frequency * 0.8,
+        time + settings.duration
+    );
+
+    gain.gain.setValueAtTime(0.0001, time);
+
+    gain.gain.linearRampToValueAtTime(
+        settings.volume,
+        time + settings.attack
+    );
+
+    gain.gain.exponentialRampToValueAtTime(
+        0.0001,
+        time + settings.duration
+    );
+
+    oscillator.connect(gain);
+    gain.connect(ctx.destination);
+
+    oscillator.start(time);
+    oscillator.stop(time + settings.duration + 0.01);
+}
+
+
+// CLICKY SOUND - ORIGINAL SOUND
+
+function playClicky(ctx, now) {
 
     function makeImpact(time, volume, frequency) {
-
-        // Short burst of mechanical noise
 
         const duration = 0.035;
 
@@ -484,6 +633,7 @@ function playMechanicalClick() {
         const noiseGain = ctx.createGain();
 
         noiseGain.gain.setValueAtTime(volume, time);
+
         noiseGain.gain.exponentialRampToValueAtTime(
             0.001,
             time + duration
@@ -496,27 +646,18 @@ function playMechanicalClick() {
         noise.start(time);
         noise.stop(time + duration);
 
-        // Small resonant body for a physical button feel
-
         const oscillator = ctx.createOscillator();
         const bodyGain = ctx.createGain();
 
         oscillator.type = "triangle";
-
-        oscillator.frequency.setValueAtTime(
-            190,
-            time
-        );
+        oscillator.frequency.setValueAtTime(190, time);
 
         oscillator.frequency.exponentialRampToValueAtTime(
             90,
             time + 0.04
         );
 
-        bodyGain.gain.setValueAtTime(
-            volume * 0.5,
-            time
-        );
+        bodyGain.gain.setValueAtTime(volume * 0.5, time);
 
         bodyGain.gain.exponentialRampToValueAtTime(
             0.001,
@@ -528,15 +669,120 @@ function playMechanicalClick() {
 
         oscillator.start(time);
         oscillator.stop(time + 0.05);
-
     }
 
-    // Main press
     makeImpact(now, 0.45, 1200);
-
-    // Return spring / release click
     makeImpact(now + 0.045, 0.23, 1800);
+}
 
+
+// TACTILE SOUND - SOFT KEYBOARD PRESS
+
+function playTactile(ctx, now) {
+
+    makeNoiseImpact(ctx, now, {
+        volume: 0.12,
+        filter: 2600,
+        duration: 0.025,
+        fade: 5
+    });
+
+    makeSoftTone(ctx, now, {
+        frequency: 520,
+        endFrequency: 430,
+        volume: 0.035,
+        duration: 0.075,
+        attack: 0.008,
+        wave: "sine"
+    });
+
+    makeNoiseImpact(ctx, now + 0.035, {
+        volume: 0.045,
+        filter: 3400,
+        duration: 0.018,
+        fade: 6
+    });
+}
+
+
+// LINEAR SOUND - DREAMY AND SMOOTH
+
+function playLinear(ctx, now) {
+
+    makeNoiseImpact(ctx, now, {
+        volume: 0.045,
+        filter: 3200,
+        duration: 0.025,
+        fade: 6
+    });
+
+    makeSoftTone(ctx, now + 0.015, {
+        frequency: 1480,
+        endFrequency: 1180,
+        volume: 0.035,
+        duration: 0.20,
+        attack: 0.045,
+        wave: "sine"
+    });
+
+    makeSoftTone(ctx, now + 0.055, {
+        frequency: 1860,
+        endFrequency: 1640,
+        volume: 0.012,
+        duration: 0.16,
+        attack: 0.04,
+        wave: "sine"
+    });
+}
+
+
+// PLAY SELECTED SOUND
+
+function playMechanicalClick() {
+
+    if (!soundEnabled) return;
+
+    const ctx = getAudioContext();
+
+    if (!ctx) return;
+
+    const now = ctx.currentTime;
+
+    if (currentSound === "clicky") {
+        playClicky(ctx, now);
+    } else if (currentSound === "tactile") {
+        playTactile(ctx, now);
+    } else if (currentSound === "linear") {
+        playLinear(ctx, now);
+    }
+}
+
+
+// SOUND SELECTION
+
+const soundDescriptions = {
+
+    clicky: "Crisp and satisfying mechanical clicks.",
+
+    tactile: "A soft keyboard-like press with a gentle bump. ♡",
+
+    linear: "A smooth, quiet press with a dreamy little chime. ✨"
+};
+
+function changeSound(type) {
+
+    currentSound = type;
+
+    document.querySelectorAll(".sound-option").forEach(button => {
+        button.classList.remove("active");
+    });
+
+    document.getElementById(type).classList.add("active");
+
+    document.getElementById("sound-description").textContent =
+        soundDescriptions[type];
+
+    playMechanicalClick();
 }
 
 
@@ -556,8 +802,6 @@ const messages = [
 
 function clickButton(type, button) {
 
-    // Update counters
-
     counts[type]++;
     totalClicks++;
 
@@ -567,11 +811,7 @@ function clickButton(type, button) {
     document.getElementById("total-count").textContent =
         totalClicks;
 
-    // Play mechanical sound
-
     playMechanicalClick();
-
-    // Physical press animation
 
     button.classList.add("pressed");
 
@@ -579,11 +819,7 @@ function clickButton(type, button) {
         button.classList.remove("pressed");
     }, 110);
 
-    // Floating sparkle
-
     createSparkle(button);
-
-    // Special sunflower response
 
     if (type === "SUN") {
 
@@ -596,7 +832,6 @@ function clickButton(type, button) {
             messages[Math.floor(Math.random() * messages.length)];
 
     }
-
 }
 
 
@@ -607,7 +842,6 @@ function createSparkle(button) {
     const rect = button.getBoundingClientRect();
 
     const sparkle = document.createElement("div");
-
     sparkle.className = "sparkle";
 
     sparkle.textContent =
@@ -624,7 +858,6 @@ function createSparkle(button) {
     setTimeout(() => {
         sparkle.remove();
     }, 800);
-
 }
 
 
@@ -636,7 +869,6 @@ function toggleSound() {
 
     document.getElementById("sound-button").textContent =
         soundEnabled ? "🔊 Sound On" : "🔇 Sound Off";
-
 }
 
 
@@ -656,15 +888,12 @@ function resetCounter() {
     document.getElementById("total-count").textContent = "0";
 
     for (const type in counts) {
-
         document.getElementById("count-" + type).textContent =
             "0 clicks";
-
     }
 
     document.getElementById("message").textContent =
         "Fresh start! Enjoy your little clicker. ♡";
-
 }
 
 </script>
